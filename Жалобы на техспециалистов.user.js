@@ -8,7 +8,7 @@
 // @include      https://forum.blackrussia.online/index.php?threads/
 // @grant        none
 // @license 	 MIT
-// @collaborator modified by rosenfeld
+// @collaborator С любовью от Владислава Розенфельда. Сделано специально для Даниила Романова! (оригинальное авторство - Владислав Лищук)
 // @icon https://icons.iconarchive.com/icons/thesquid.ink/free-flat-sample/128/support-icon.png
 // @copyright 2021, Carrizo (https://openuserjs.org/users/Carrizo)
 // ==/UserScript==
