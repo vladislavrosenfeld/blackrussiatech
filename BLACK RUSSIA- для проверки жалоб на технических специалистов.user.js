@@ -1,14 +1,15 @@
 // ==UserScript==
-// @name         BLACK RUSSIA: для проверки жалоб на технических специалистов
+// @name         BLACK RUSSIA: скрипт для технических специалистов
 // @namespace    https://forum.blackrussia.online
-// @version      1.1.1
+// @version      1.1.3.3
 // @description  Для борьбы с техническими шоколадками
-// @author       Carrizo
+// @updateURL    https://openuserjs.org/meta/vladislavrosenfeld/BLACK_RUSSIA_скрипт_для_технических_специалистов.meta.js
+// @author       Antonio Carrizo
 // @match        https://forum.blackrussia.online/index.php?threads/*
 // @include      https://forum.blackrussia.online/index.php?threads/
 // @grant        none
 // @license 	 MIT
-// @collaborator modified by rosenfeld
+// @collaborator С любовью от Владислава Розенфельда! (оригинальное авторство остаётся за Владиславом Лищуком)
 // @icon https://icons.iconarchive.com/icons/thesquid.ink/free-flat-sample/128/support-icon.png
 // @copyright 2021, Carrizo (https://openuserjs.org/users/Carrizo)
 // ==/UserScript==
@@ -16,7 +17,7 @@
 (function () {
   'use strict';
 const UNACCEPT_PREFIX = 4; // Prefix that will be set when thread closes
-const ACCEPT_PREFIX = 8; // Prefix that will be set when thread accepted
+const ACCEPT_PREFIX = 6; // Prefix that will be set when thread solved
 const PIN_PREFIX = 2; // Prefix that will be set when thread pins
 const COMMAND_PREFIX = 10; // Prefix that will be set when thread send to project team
 const WATCHED_PREFIX = 9;
@@ -25,147 +26,153 @@ const buttons = [
 	{
 	  title: 'Приветствие',
 	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' + '[CENTER][/CENTER][/FONT]',
+		'[CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' + '[CENTER][/CENTER]',
 	},
 	{
 	  title: 'Правила раздела',
 	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' +
-		"[CENTER]Вынужден отказать Вам в рассмотрении этой темы по следующей причине:" +
-        '[CENTER]Ваше обращение не соответствует данному разделу, так как он предназначен для жалоб на технических специалистов/обжалований, но никак не для решения подобных проблем.<br>' +
-		'[CENTER]Отказано, закрыто.[/CENTER][/FONT]',
-        prefix: UNACCEPT_PREFIX,
-        status: false,
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]Пожалуйста, убедительная просьба, ознакомиться с назначением данного раздела в котором Вы создали тему, так как ваш запрос никоим образом не относится к технической проблеме.[/CENTER]<br>" +
+		'[CENTER]Отказано, закрыто.[/CENTER]',
+	},
+{
+	  title: 'Жалобы сервера',
+	  content:
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]Обратитесь в раздел «Жалобы» Вашего сервера:<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.54/'][B]Сервер №1 | Red[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.98/'][B]Сервер №2 | Green[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.138/'][B]Сервер №3 | Blue[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.174/'][B]Сервер №4 | Yellow[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.251/'][B]Сервер №5 | Orange[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.291/'][B]Сервер №6 | Purple[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.331/'][B]Сервер №7 | Lime[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.373/'][B]Сервер №8 | Pink[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.414/'][B]Сервер №9 | Cherry[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.467/'][B]Сервер №10 | Black[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.498/'][B]Сервер №11 | Indigo[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.654/'][B]Сервер №12 | White[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.655/'][B]Сервер №13 | Magenta[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?forums/Жалобы.619/'][B]Сервер №14 | Crimson[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.700/'][B]Сервер №15 | Gold[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.720/'][B]Сервер №16 | Azure[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.763/'][B]Сервер №17 | Platinum[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?forums/%D0%96%D0%B0%D0%BB%D0%BE%D0%B1%D1%8B.822/'][B] Сервер N18 | Aqua[/B] — нажмите сюда[/URL]<br><br>" +
+        '[CENTER]Отказано, закрыто.[/CENTER]'
 	},
 	{
-	  title: 'Какие жалобы не проверяются',
+	  title: 'Краш/вылет',
 	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' +
-		"[CENTER]Вынужден отказать в рассмотрении Вашей жалобы, так как в ней имеются нарушения правил подачи.[/CENTER]<br>" +
-        "[CENTER][QUOTE]Какие жалобы не рассматриваются?[/CENTER]<br>" +
-		"[CENTER]— Если в содержании темы присутствует оффтоп/оскорбления.<br>" +
-        "[CENTER]— С момента выдачи наказания прошло более 7 дней.[/QUOTE][/CENTER]<br>" +
-		'[CENTER]Отказано, закрыто.[/CENTER][/FONT]',
-        prefix: UNACCEPT_PREFIX,
-        status: false,
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]В том случае, если Вы вылетели из игры во время игрового процесса (произошел краш), в обязательно порядке необходимо обратиться в данную тему - https://forum.blackrussia.online/index.php?threads/Вылеты-отсоединения-recaptcha-—-оставляйте-заявку-в-этой-теме.461523/ [/CENTER]<br>" +
+		"[CENTER][CODE]01. Ваш игровой никнейм: <br> 02. Сервер: <br> 03. Тип проблемы: Обрыв соединения | Проблема с ReCAPTCHA | Краш игры (закрытие игры) | Другое [Выбрать один вариант ответа] <br> 04. Действия, которые привели к этому (при вылетах, по возможности предоставлять место сбоя): <br> 05. Как часто данная проблема: <br> 06. Полное название мобильного телефона: <br> 07. Версия Android: <br> 08. Дата и время (по МСК): <br> 09. Связь с Вами по Telegram/VK:[/CODE]<br><br>" +
+		'[CENTER]Решено, заполните данную форму в теме, указанной выше.[/CENTER]',
 	},
 	{
-	  title: 'Запросил доказательства',
+	  title: 'Дублирование темы',
 	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' +
-		"[CENTER]Запросил доказательства у технического специалиста, ожидайте ответа.<br>" +
-		'[CENTER]На рассмотрении.[/CENTER][/FONT]',
-         prefix: PIN_PREFIX,
-         status: true,
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]Ответ уже был дан в подобной теме. Пожалуйста, прекратите создавать идентичные или похожие темы - иначе Ваш аккаунт может быть заблокирован.<br>" +
+		'[CENTER]Отказано, закрыто.[/CENTER]',
 	},
 	{
 	  title: 'Форма темы',
 	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' +
-		"[CENTER]Вынужден отказать Вам в рассмотрении этой темы по следующей причине:<br><br>" +
-        "[CENTER]Жалоба составлена не по форме, с которой Вы в свою очередь сможете ознакомиться по данной ссылке - https://clck.ru/TYubb[/CENTER]<br>" +
-		'[CENTER]Отказано, закрыто.[/CENTER][/FONT]',
-        prefix: UNACCEPT_PREFIX,
-        status: false,
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]Пожалуйста, заполните форму, создав новую тему: <br>[CODE]01. Ваш игровой никнейм:<br>02. Сервер, на котором Вы играете:<br>03. Суть Вашей возникшей проблемы (описать максимально подробно и раскрыто): <br>04. Любые скриншоты, которые могут помочь в решении проблемы (если таковые имеются):<br>05. Дата и время произошедшей технической проблемы (постарайтесь указать максимально точно):[/CODE]<br><br>" +
+		'[CENTER]Отказано, закрыто.[/CENTER]',
+	},
+{
+	  title: 'Восстановление аккаунта',
+	  content:
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]Если Вы обезопасили Ваш аккаунт и [U]привязали его к странице во ВКонтакте[/U], то сбросить пароль или пин-код Вы всегда сможете обратившись в официальное сообщество проекта - https://vk.com/blackrussia.online. Напишите 'Начать' в личные сообщения группы, затем выберите нужные Вам функции.<br><br>" +
+		"[CENTER]Если Вы обезопасили Ваш аккаунт и [U]привязали его к почте[/U], то сбросить пароль или пин-код Вы всегда сможете при вводе пароля на сервере. Выберите кнопку 'восст', затем выберите нужные Вам функции.<br><br>" +
+        "[CENTER]Если Вы [U]не обезопасили свой аккаунт - его невозможно вернуть[/U]. Он будет заблокирован навсегда.<br><br>" +
+        '[CENTER]К сожалению, иногда решение подобных вопросов требует много времени. Надеемся, что Вы сможете восстановить доступ к аккаунту! Рассмотрено.[/CENTER]',
+	},
+{
+	  title: 'Слетел аккаунт',
+	  content:
+        '[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+        "[CENTER]Аккаунт не может пропасть или аннулироваться просто так. Даже если Вы меняете ник, используете кнопки 'починить игру' или 'сброс настроек' - Ваш аккаунт не удаляется.<br>" +
+        "[CENTER]Проверьте ввод своих данных: пароль, ник-нейм и сервер. Зачастую игроки просто забывают ввести актуальные данные и считают, что их аккаунт был удален. Будьте внимательны!<br><br>" +
+        '[CENTER]Как ввести никнейм (на случай, если сменили в игре, но не поменяли в клиенте): https://youtu.be/c8rhVwkoFaU[/CENTER]'
 	},
     {
-	  title: 'Дублирование темы',
+	  title: 'Проблема будет исправлена',
 	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' +
-		"[CENTER]Вынужден отказать Вам в рассмотрении этой темы по следующей причине:<br><br>[/CENTER]" +
-        "[CENTER]Вам уже был дан ответ в подобной теме. Это дублирование темы. Напоминаем, при 3 дублированиях – форумный аккаунт будет заблокирован.<br>[/CENTER]" +
-		'[CENTER]Отказано, закрыто.[/CENTER][/FONT]',
-        prefix: UNACCEPT_PREFIX,
-        status: false,
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]Данная недоработка будет проверена и исправлена. Спасибо за то, что помогаете сделать проект лучше!<br><br>" +
+		'[CENTER]Рассмотрено.[/CENTER]',
 	},
 	{
-	  title: 'Передано Льву',
+	  title: 'Известно о проблеме',
 	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' +
-		"[CENTER]Передал Вашу жалобу на рассмотрение главному техническому специалисту, ожидайте ответа.<br><br>" +
-		'[CENTER]На рассмотрении.[/CENTER][/FONT]',
-        prefix: COMMAND_PREFIX,
-        status: true,
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]Команде проекта уже известно о данной проблеме, она обязательно будет рассмотрена и исправлена. Спасибо за Ваше обращение!<br><br>" +
+		'[CENTER]Закрыто.[/CENTER]',
+	},
+	{
+	  title: 'Команде проекта',
+	  content:
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]Ваша тема закреплена и находится на рассмотрении у команды проекта. Пожалуйста, ожидайте выноса вердикта разработчиков.<br>" +
+		'[CENTER]Создавать новые темы с данной проблемой — не нужно, ожидайте ответа в данной теме. Если проблема решится - Вы всегда можете оставить своё сообщение в этой теме.[/CENTER]',
+	},
+	{
+	  title: 'Нет доказательств',
+	  content:
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]Без доказательств (в частности скриншоты или видео) – решить проблему не получится. Если доказательства найдутся - создайте новую тему, приложив доказательства с фото-хостинга yapx.ru или imgur.com<br><br>" +
+		'[CENTER]Отказано, закрыто.[/CENTER]',
+	},
+    	{
+	  title: 'Правила восстановления',
+	  content:
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]Пожалуйста, убедительная просьба, ознакомтесь с правилами восстановлений: https://clck.ru/NeHEQ. Вы создали тему, которая никоим образом не относится к технической проблеме. Имущество не будет восстановлено.[/CENTER]<br>" +
+		'[CENTER]Отказано, закрыто.[/CENTER]',
 	},
     {
-	  title: 'В обжаловании отказано',
+	  title: 'Донат',
 	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' +
-		"[CENTER]Посоветовавшись с техническим специалистом, пришли к выводу: в обжаловании отказано.<br>" +
-        '[CENTER]Отказано, закрыто.[/CENTER][/FONT]',
-       prefix: UNACCEPT_PREFIX,
-       status: false,
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		'[CENTER]Система построена таким образом, что деньги не спишутся, пока наша платформа не уведомит платежную систему о зачислении BLACK COINS. Для проверки зачисления BLACK COINS необходимо ввести в игре команду: /donat.<br>' +
+        '[CENTER]В остальных же случаях, если не были зачислены BLACK COINS — вероятнее всего, была допущена ошибка при вводе реквизитов. К нашему сожалению, из-за большого количества попыток обмана, мы перестали рассматривать подобные жалобы. Вам необходимо быть внимательными при осуществлении покупок. <br>' +
+        '[CENTER]Решено.[/CENTER]',
+    },
+    {
+	  title: 'Хочу стать админом',
+	  content:
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		"[CENTER]Команда технических специалистов не решает назначение на должность лидера, агента поддержки или администратора. Для этого существуют заявления в главном разделе Вашего сервера. Приятной игры и удачи в начинаниях!<br>" +
+		'[CENTER]Закрыто.[/CENTER]',
 	},
-     {
-	  title: 'Обжалование одобрено',
+    {
+	  title: 'Жалобы на техспециалистов',
 	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' +
-		"[CENTER]Посоветовавшись с техническим специалистом, пришли к выводу: наказание будет снято или снижено. Перед входом на сервера обязательно перечитайте правила поведения на проекте.<br>" +
-        '[CENTER]Одобрено, закрыто.[/CENTER][/FONT]',
-       prefix: ACCEPT_PREFIX,
-       status: false,
-	},
-	{
-	  title: 'Наказание выдано верно',
-	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' +
-		"[CENTER]Технический специалист предоставил доказательства, выдано верно.<br>" +
-		'[CENTER]Вы совершили действия, которые противоречат регламенту проекта.<br>[/CENTER]' +
-        '[CENTER]Отказано, закрыто.[/CENTER][/FONT]',
-       prefix: UNACCEPT_PREFIX,
-       status: false,
-	},
-     {
-	  title: 'Наказание будет снято',
-	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' +
-		"[CENTER]Ваше наказание будет снято. Извините за предоставленные неудобства. Приятной игры на проекте Black Russia!<br>" +
-        '[CENTER]Одобрено.[/CENTER][/FONT]',
-        prefix: ACCEPT_PREFIX,
-        status: false,
-	},
-	{
-	  title: 'Жалобы сервера',
-	  content:
-		'[FONT=Verdana][CENTER]{{ greeting }}, уважаемый(-ая) {{ user.mention }}.[/CENTER]<br>' +
-		"[CENTER]Обратитесь в раздел «Жалобы» Вашего сервера:<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.54/'][B]Сервер №1 | Red[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.98/'][B]Сервер №2 | Green[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.138/']Сервер №3 | Blue → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.174/'][B]Сервер №4 | Yellow[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.251/'][B]Сервер №5 | Orange[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.291/'][B]Сервер №6 | Purple[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.331/'][B]Сервер №7 | Lime[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.373/'][B]Сервер №8 | Pink[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.414/'][B]Сервер №9 | Cherry[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.467/'][B]Сервер №10 | Black[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.498/'][B]Сервер №11 | Indigo[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.654/'][B]Сервер №12 | White[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.655/'][B]Сервер №13 | Magenta[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?forums/Жалобы.619/'][B]Сервер №14 | Crimson[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.700/'][B]Сервер №15 | Gold[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.720/'][B]Сервер №16 | Azure[/B] → нажмите сюда[/URL]<br>[URL='https://forum.blackrussia.online/index.php?categories/Жалобы.763/'][B]Сервер №17 | Platinum[/B] → нажмите сюда[/URL]<br><br>" +
-        '[CENTER]Отказано, закрыто.[/CENTER][/FONT]',
-        prefix: UNACCEPT_PREFIX,
-        status: false,
+		'[CENTER]{{ greeting }}, уважаемый {{ user.mention }}.[/CENTER]<br>' +
+		'[CENTER]Вы получили наказание от технического специалиста Вашего сервера. Вам следует обратиться в раздел жалоб на технических специалистов в случае, если Вы не согласны с наказанием.<br>' +
+        '[CENTER]Ссылка на раздел, где можно оформить жалобу на технического специалиста: https://forum.blackrussia.online/index.php?forums/Жалобы-на-технических-специалистов.490/ <br>' +
+        '[CENTER]Закрыто.[/CENTER]'
 	},
 ];
 
 $(document).ready(() => {
-	// Загрузка скрипта для обработки шаблонов
-	$('body').append('<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>');
+// Загрузка скрипта для обработки шаблонов
+$('body').append('<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>');
 
-	// Добавление кнопок при загрузке страницы
-	addButton('На рассмотрении', 'pin');
-    addButton('КП', 'teamProject');
-	addButton('Одобрено', 'accepted');
-    addButton('Рассмотрено', 'watched');
-	addButton('Отказано', 'unaccept');
-	addButton('Ответы', 'selectAnswer');
+// Добавление кнопок при загрузке страницы
+addButton('На рассмотрении', 'pin');
+addButton('КП', 'teamProject');
+addButton('Отказано', 'unaccept');
+addButton('Рассмотрено', 'watched');
+addButton('Решено', 'accepted');
+addButton('Закрыто', 'closed');
+addButton('Ответы', 'selectAnswer');
 
-	// Поиск информации о теме
-	const threadData = getThreadData();
 
-	$('button#pin').click(() => editThreadData(PIN_PREFIX, true));
-	$('button#accepted').click(() => editThreadData(ACCEPT_PREFIX, false));
-	$('button#unaccept').click(() => editThreadData(UNACCEPT_PREFIX, false));
-    $('button#teamProject').click(() => editThreadData(COMMAND_PREFIX, true));
-    $('button#watched').click(() => editThreadData(WATCHED_PREFIX, false));
-	$(`button#selectAnswer`).click(() => {
-		XF.alert(buttonsMarkup(buttons), null, 'Выберите ответ:');
-		buttons.forEach((btn, id) => {
-			if(id > 0) {
-				$(`button#answers-${id}`).click(() => pasteContent(id, threadData, true));
-			} else {
-				$(`button#answers-${id}`).click(() => pasteContent(id, threadData, false));
-			}
-		});
-	});
+// Поиск информации о теме
+const threadData = getThreadData();
+
+$('button#unaccept').click(() => editThreadData(UNACCEPT_PREFIX, false));
+$('button#pin').click(() => editThreadData(PIN_PREFIX, true));
+$('button#accepted').click(() => editThreadData(ACCEPT_PREFIX, false));
+$('button#teamProject').click(() => editThreadData(COMMAND_PREFIX, true));
+$('button#watched').click(() => editThreadData(WATCHED_PREFIX, false));
+$('button#closed').click(() => editThreadData(CLOSE_PREFIX, false));
+
+$(`button#selectAnswer`).click(() => {
+  XF.alert(buttonsMarkup(buttons), null, 'Выберите ответ:');
+  buttons.forEach((btn, id) => {
+	$(`button#answers-${id}`).click(() => pasteContent(id, threadData));
+  });
 });
+});
+
 
 function addButton(name, id) {
 $('.button--icon--reply').before(
@@ -183,20 +190,16 @@ return `<div class="select_answer">${buttons
   .join('')}</div>`;
 }
 
-function pasteContent(id, data = {}, send = false) {
-	const template = Handlebars.compile(buttons[id].content);
-	if ($('.fr-element.fr-view p').text() === '') $('.fr-element.fr-view p').empty();
+function pasteContent(id, data = {}) {
+const template = Handlebars.compile(buttons[id].content);
+if ($('.fr-element.fr-view p').text() === '') $('.fr-element.fr-view p').empty();
 
-	$('span.fr-placeholder').empty();
-	$('div.fr-element.fr-view p').append(template(data));
-	$('a.overlay-titleCloser').trigger('click');
-
-	if(send == true){
-		editThreadData(buttons[id].prefix, buttons[id].status);
-		$('.button--icon.button--icon--reply.rippleButton').trigger('click');
-	}
+$('span.fr-placeholder').empty();
+$('div.fr-element.fr-view p').append(template(data));
+$('a.overlay-titleCloser').trigger('click');
 }
 
+// Приветствие и время суток
 function getThreadData() {
 const authorID = $('a.username')[0].attributes['data-user-id'].nodeValue;
 const authorName = $('a.username').html();
@@ -210,9 +213,9 @@ return {
   greeting: () =>
 	4 < hours && hours <= 11
 	  ? 'Доброе утро'
-	  : 11 < hours && hours <= 16
+	  : 11 < hours && hours <= 17
 	  ? 'Добрый день'
-	  : 16 < hours && hours <= 21
+	  : 17 < hours && hours <= 23
 	  ? 'Добрый вечер'
 	  : 'Доброй ночи',
 };
@@ -241,7 +244,7 @@ function editThreadData(prefix, pin = false) {
 		  body: getFormData({
 			prefix_id: prefix,
 			title: threadTitle,
-            discussion_open: 0,
+            discussion_open: 1,
 			sticky: 1,
 			_xfToken: XF.config.csrf,
 			_xfRequestUri: document.URL.split(XF.config.url.fullBase)[1],
@@ -283,4 +286,3 @@ function getFormData(data) {
 	return formData;
   }
 })();
-
